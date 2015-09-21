@@ -33,15 +33,6 @@ func (user *User) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 				Description: "The todos for a user.",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
 					return r.Resolve(ctx, user.Todos, f)
-					// todos := make([]interface{}, 0, len(user.Todos))
-					// for _, todo := range user.Todos {
-					// 	s, err := r.Resolve(ctx, todo, f)
-					// 	if err != nil {
-					// 		return nil, err
-					// 	}
-					// 	todos = append(todos, s)
-					// }
-					// return r.Resolve(ctx, todos, f)
 				},
 			},
 		},

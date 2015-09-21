@@ -35,7 +35,7 @@ func NewGraph() *Graph {
 func (graph *Graph) AddToDo(user *User, text string, complete bool) {
 
 	todo := &TodoNode{
-		fmt.Sprintf("%s", graph.nextId),
+		fmt.Sprintf("%d", graph.nextId),
 		text,
 		complete,
 	}

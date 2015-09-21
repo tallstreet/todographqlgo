@@ -36,7 +36,7 @@ type TodoConnection struct {
 func (todos *TodoConnection) addTodo(todo *TodoNode) {
 	todos.Edges = append(todos.Edges, &TodoEdge{
 		todo,
-		fmt.Sprintf("%s", todos.TotalCount),
+		fmt.Sprintf("%d", todos.TotalCount),
 	})
 	todos.TotalCount += 1
 	if todo.Completed {
