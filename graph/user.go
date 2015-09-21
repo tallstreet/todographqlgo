@@ -9,7 +9,7 @@ import (
 
 type User struct {
 	Id    string
-	Todos  *TodoConnection
+	Todos *TodoConnection
 }
 
 func (user *User) addToDo(todo *TodoNode) {

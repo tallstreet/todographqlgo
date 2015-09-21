@@ -9,8 +9,8 @@ import (
 )
 
 type TodoNode struct {
-	Id   string
-	Text string
+	Id        string
+	Text      string
 	Completed bool
 }
 
@@ -22,14 +22,14 @@ type PageInfo struct {
 }
 
 type TodoEdge struct {
-	Node *TodoNode
+	Node   *TodoNode
 	Cursor string
 }
 
 type TodoConnection struct {
-	PageInfo    PageInfo
-	Edges       []*TodoEdge
-	TotalCount  int
+	PageInfo       PageInfo
+	Edges          []*TodoEdge
+	TotalCount     int
 	CompletedCount int
 }
 
@@ -39,7 +39,7 @@ func (todos *TodoConnection) addTodo(todo *TodoNode) {
 		fmt.Sprintf("%s", todos.TotalCount),
 	})
 	todos.TotalCount += 1
-	if (todo.Completed) {
+	if todo.Completed {
 		todos.CompletedCount += 1
 	}
 }
@@ -80,8 +80,6 @@ func (todo *TodoConnection) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 		},
 	}
 }
-
-
 
 func (todoedge *TodoEdge) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 	return schema.GraphQLTypeInfo{

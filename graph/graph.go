@@ -9,9 +9,9 @@ import (
 )
 
 type Graph struct {
-	nextId   int  
-	Todos    map[int]*TodoNode
-	Users    map[string]*User
+	nextId int
+	Todos  map[int]*TodoNode
+	Users  map[string]*User
 }
 
 func NewGraph() *Graph {
@@ -20,12 +20,12 @@ func NewGraph() *Graph {
 		make(map[int]*TodoNode),
 		make(map[string]*User),
 	}
-	
+
 	graph.Users["me"] = &User{
 		"me",
 		new(TodoConnection),
 	}
-	
+
 	graph.AddToDo(graph.Users["me"], "Taste Javascript", false)
 	graph.AddToDo(graph.Users["me"], "Buy a unicorn", false)
 
@@ -33,16 +33,16 @@ func NewGraph() *Graph {
 }
 
 func (graph *Graph) AddToDo(user *User, text string, complete bool) {
-	
-	todo := &TodoNode {
+
+	todo := &TodoNode{
 		fmt.Sprintf("%s", graph.nextId),
-		text, 
+		text,
 		complete,
-	};
+	}
 	graph.Todos[graph.nextId] = todo
 	graph.nextId += 1
 	user.addToDo(todo)
-	
+
 }
 
 func (graph *Graph) GraphQLTypeInfo() schema.GraphQLTypeInfo {
