@@ -1,7 +1,6 @@
 package graph
 
 import (
-	"fmt"
 	"github.com/tallstreet/graphql"
 	"github.com/tallstreet/graphql/executor/resolver"
 	"github.com/tallstreet/graphql/schema"
@@ -23,11 +22,9 @@ type PageInfo struct {
 
 type TodoEdge struct {
 	Node   *TodoNode
-	Cursor string
 }
 
 type TodoConnection struct {
-	PageInfo       PageInfo
 	Edges          []*TodoEdge
 	TotalCount     int
 	CompletedCount int
@@ -36,7 +33,6 @@ type TodoConnection struct {
 func (todos *TodoConnection) addTodo(todo *TodoNode) {
 	todos.Edges = append(todos.Edges, &TodoEdge{
 		todo,
-		fmt.Sprintf("%d", todos.TotalCount),
 	})
 	todos.TotalCount += 1
 	if todo.Completed {
@@ -74,7 +70,7 @@ func (todo *TodoConnection) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 				Name:        "pageInfo",
 				Description: "Is the ToDo completed",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
-					return r.Resolve(ctx, todo.PageInfo, f)
+					return r.Resolve(ctx, &PageInfo{}, f)
 				},
 			},
 		},
@@ -97,7 +93,7 @@ func (todoedge *TodoEdge) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 				Name:        "cursor",
 				Description: "The id of todo.",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
-					return r.Resolve(ctx, todoedge.Cursor, f)
+					return r.Resolve(ctx, "1", f)
 				},
 			},
 		},
