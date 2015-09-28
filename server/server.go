@@ -27,8 +27,6 @@ func (app *App) RunServer() {
 	g := graph.NewGraph()
 
 	schema := schema.New()
-	schema.Register(g.Todos[0])
-	schema.Register(g.Users["me"])
 	schema.Register(g)
 
 	executor := executor.New(schema)

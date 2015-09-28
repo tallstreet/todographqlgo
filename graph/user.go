@@ -35,6 +35,20 @@ func (user *User) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 					return r.Resolve(ctx, user.Todos, f)
 				},
 			},
+			"completedCount": {
+				Name:        "completedCount",
+				Description: "The todos for a user.",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					return r.Resolve(ctx, user.Todos.CompletedCount, f)
+				},
+			},
+			"totalCount": {
+				Name:        "totalCount",
+				Description: "The todos for a user.",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					return r.Resolve(ctx, user.Todos.TotalCount, f)
+				},
+			},
 		},
 	}
 }
