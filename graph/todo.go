@@ -109,7 +109,7 @@ func (todoedge *TodoEdge) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 				Name:        "cursor",
 				Description: "The id of todo.",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
-					return r.Resolve(ctx, "1", f)
+					return r.Resolve(ctx, todoedge.Node.Id, f)
 				},
 			},
 		},

@@ -35,11 +35,11 @@ func (user *User) changeStatus(id string, complete bool) *TodoEdge {
 		if complete {
 			user.CompletedTodos.addTodo(todo)
 			user.ActiveTodos.removeTodo(todo)
-			user.AnyTodos.CompletedCount -= 1
+			user.AnyTodos.CompletedCount += 1
 		} else {
 			user.ActiveTodos.addTodo(todo)
 			user.CompletedTodos.removeTodo(todo)
-			user.AnyTodos.CompletedCount += 1
+			user.AnyTodos.CompletedCount -= 1
 		}
 	}
 	return todo
