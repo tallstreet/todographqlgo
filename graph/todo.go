@@ -30,11 +30,29 @@ type TodoConnection struct {
 	CompletedCount int
 }
 
+func (todos *TodoConnection) findIndex(todo *TodoEdge) int {
+	for i, t := range todos.Edges {
+		if t == todo {
+			return i
+		}
+	}
+	return -1
+}
+
 func (todos *TodoConnection) addTodo(todo *TodoEdge) {
 	todos.Edges = append(todos.Edges, todo)
 	todos.TotalCount += 1
 	if todo.Node.Completed {
 		todos.CompletedCount += 1
+	}
+}
+
+func (todos *TodoConnection) removeTodo(todo *TodoEdge) {
+	i := todos.findIndex(todo)
+	todos.Edges = append(todos.Edges[:i], todos.Edges[i+1:]...)
+	todos.TotalCount -= 1
+	if todo.Node.Completed {
+		todos.CompletedCount -= 1
 	}
 }
 

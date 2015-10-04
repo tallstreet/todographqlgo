@@ -8,10 +8,10 @@ import (
 )
 
 type User struct {
-	Id    string
-	AnyTodos *TodoConnection
+	Id             string
+	AnyTodos       *TodoConnection
 	CompletedTodos *TodoConnection
-	ActiveTodos *TodoConnection
+	ActiveTodos    *TodoConnection
 }
 
 func (user *User) addToDo(todo *TodoEdge) {
@@ -21,6 +21,28 @@ func (user *User) addToDo(todo *TodoEdge) {
 	} else {
 		user.ActiveTodos.addTodo(todo)
 	}
+}
+
+func (user *User) changeStatus(id string, complete bool) *TodoEdge {
+	var todo *TodoEdge
+	for _, t := range user.AnyTodos.Edges {
+		if t.Node.Id == id {
+			todo = t
+		}
+	}
+	if todo.Node.Completed != complete {
+		todo.Node.Completed = complete
+		if complete {
+			user.CompletedTodos.addTodo(todo)
+			user.ActiveTodos.removeTodo(todo)
+			user.AnyTodos.CompletedCount -= 1
+		} else {
+			user.ActiveTodos.addTodo(todo)
+			user.CompletedTodos.removeTodo(todo)
+			user.AnyTodos.CompletedCount += 1
+		}
+	}
+	return todo
 }
 
 func (user *User) GraphQLTypeInfo() schema.GraphQLTypeInfo {
