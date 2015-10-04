@@ -1,5 +1,4 @@
 # To Do GraphQL Go
 
-Program todo shows a simple HTTP server that works as a graphql backend to the relay Todo Example
-
-Currently only the add mutation is supported
+This is an example of a graphql relay backend written in go for the [Relay Todo Example](https://github.com/facebook/relay/tree/master/examples/todo)
+ 
