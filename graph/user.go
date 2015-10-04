@@ -45,6 +45,22 @@ func (user *User) changeStatus(id string, complete bool) *TodoEdge {
 	return todo
 }
 
+func (user *User) remove(id string) *TodoEdge {
+	var todo *TodoEdge
+	for _, t := range user.AnyTodos.Edges {
+		if t.Node.Id == id {
+			todo = t
+		}
+	}
+	user.AnyTodos.removeTodo(todo)
+	if todo.Node.Completed {
+		user.CompletedTodos.removeTodo(todo)
+	} else {
+		user.ActiveTodos.removeTodo(todo)
+	}
+	return todo
+}
+
 func (user *User) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 	return schema.GraphQLTypeInfo{
 		Name:        "User",

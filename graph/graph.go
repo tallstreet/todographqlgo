@@ -26,6 +26,12 @@ type ChangeToDoStatusMutation struct {
 	edge  *TodoEdge
 }
 
+type RemoveToDoMutation struct {
+	graph *Graph
+	input map[string]interface{}
+	edge  *TodoEdge
+}
+
 func NewGraph() *Graph {
 	graph := &Graph{
 		0,
@@ -66,6 +72,11 @@ func (graph *Graph) ChangeStatus(user *User, id string, complete bool) *TodoEdge
 	return todo
 }
 
+func (graph *Graph) Remove(user *User, id string) *TodoEdge {
+	todo := user.remove(id)
+	return todo
+}
+
 func (graph *Graph) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 	return schema.GraphQLTypeInfo{
 		Name:        "To Dos",
@@ -103,6 +114,17 @@ func (graph *Graph) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 
 					todo := graph.ChangeStatus(graph.Users["me"], input["id"].(string), input["complete"].(bool))
 					return r.Resolve(ctx, &ChangeToDoStatusMutation{graph, input, todo}, f)
+				},
+				IsRoot: true,
+			},
+			"removeTodo": {
+				Name:        "removeTodo",
+				Description: "Change Todo Status",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					input := ctx.Value("variables").(map[string]interface{})[f.Arguments[0].Value.(*graphql.Variable).Name].(map[string]interface{})
+
+					todo := graph.Remove(graph.Users["me"], input["id"].(string))
+					return r.Resolve(ctx, &RemoveToDoMutation{graph, input, todo}, f)
 				},
 				IsRoot: true,
 			},
@@ -188,6 +210,47 @@ func (changeTodo *ChangeToDoStatusMutation) GraphQLTypeInfo() schema.GraphQLType
 				Description: "A To Do user",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
 					g := changeTodo.graph.Users["me"]
+
+					if g != nil {
+						return r.Resolve(ctx, g, f)
+					}
+					return nil, fmt.Errorf("User not found")
+				},
+				IsRoot: true,
+			},
+		},
+	}
+}
+
+func (removeTodo *RemoveToDoMutation) GraphQLTypeInfo() schema.GraphQLTypeInfo {
+	return schema.GraphQLTypeInfo{
+		Name:        "To Dos",
+		Description: "A ToDo list App",
+		Fields: schema.GraphQLFieldSpecMap{
+			"clientMutationId": {
+				Name:        "clientMutationId",
+				Description: "A To Do user",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					input := removeTodo.input
+					return r.Resolve(ctx, input["clientMutationId"], f)
+				},
+				IsRoot: true,
+			},
+			"deletedTodoId": {
+				Name:        "deletedTodoId",
+				Description: "A To Do user",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					g := removeTodo.edge.Node.Id
+
+					return r.Resolve(ctx, g, f)
+				},
+				IsRoot: true,
+			},
+			"viewer": {
+				Name:        "viewer",
+				Description: "A To Do user",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					g := removeTodo.graph.Users["me"]
 
 					if g != nil {
 						return r.Resolve(ctx, g, f)
