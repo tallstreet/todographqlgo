@@ -30,12 +30,10 @@ type TodoConnection struct {
 	CompletedCount int
 }
 
-func (todos *TodoConnection) addTodo(todo *TodoNode) {
-	todos.Edges = append(todos.Edges, &TodoEdge{
-		todo,
-	})
+func (todos *TodoConnection) addTodo(todo *TodoEdge) {
+	todos.Edges = append(todos.Edges, todo)
 	todos.TotalCount += 1
-	if todo.Completed {
+	if todo.Node.Completed {
 		todos.CompletedCount += 1
 	}
 }

@@ -12,7 +12,7 @@ type User struct {
 	Todos *TodoConnection
 }
 
-func (user *User) addToDo(todo *TodoNode) {
+func (user *User) addToDo(todo *TodoEdge) {
 	user.Todos.addTodo(todo)
 }
 
