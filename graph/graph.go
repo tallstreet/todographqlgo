@@ -32,6 +32,12 @@ type RemoveToDoMutation struct {
 	edge  *TodoEdge
 }
 
+type RemoveCompletedToDosMutation struct {
+	graph      *Graph
+	input      map[string]interface{}
+	deletedIds []string
+}
+
 func NewGraph() *Graph {
 	graph := &Graph{
 		0,
@@ -75,6 +81,10 @@ func (graph *Graph) ChangeStatus(user *User, id string, complete bool) *TodoEdge
 func (graph *Graph) Remove(user *User, id string) *TodoEdge {
 	todo := user.remove(id)
 	return todo
+}
+
+func (graph *Graph) ClearCompleted(user *User) []string {
+	return user.clearCompleted()
 }
 
 func (graph *Graph) GraphQLTypeInfo() schema.GraphQLTypeInfo {
@@ -125,6 +135,16 @@ func (graph *Graph) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 
 					todo := graph.Remove(graph.Users["me"], input["id"].(string))
 					return r.Resolve(ctx, &RemoveToDoMutation{graph, input, todo}, f)
+				},
+				IsRoot: true,
+			},
+			"removeCompletedTodos": {
+				Name:        "removeCompletedTodos",
+				Description: "Change Todo Status",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					input := ctx.Value("variables").(map[string]interface{})[f.Arguments[0].Value.(*graphql.Variable).Name].(map[string]interface{})
+					deletedIds := graph.ClearCompleted(graph.Users["me"])
+					return r.Resolve(ctx, &RemoveCompletedToDosMutation{graph, input, deletedIds}, f)
 				},
 				IsRoot: true,
 			},
@@ -251,6 +271,47 @@ func (removeTodo *RemoveToDoMutation) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 				Description: "A To Do user",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
 					g := removeTodo.graph.Users["me"]
+
+					if g != nil {
+						return r.Resolve(ctx, g, f)
+					}
+					return nil, fmt.Errorf("User not found")
+				},
+				IsRoot: true,
+			},
+		},
+	}
+}
+
+func (removeCompletedTodo *RemoveCompletedToDosMutation) GraphQLTypeInfo() schema.GraphQLTypeInfo {
+	return schema.GraphQLTypeInfo{
+		Name:        "To Dos",
+		Description: "A ToDo list App",
+		Fields: schema.GraphQLFieldSpecMap{
+			"clientMutationId": {
+				Name:        "clientMutationId",
+				Description: "A To Do user",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					input := removeCompletedTodo.input
+					return r.Resolve(ctx, input["clientMutationId"], f)
+				},
+				IsRoot: true,
+			},
+			"deletedTodoIds": {
+				Name:        "deletedTodoId",
+				Description: "A To Do user",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					g := removeCompletedTodo.deletedIds
+
+					return r.Resolve(ctx, g, f)
+				},
+				IsRoot: true,
+			},
+			"viewer": {
+				Name:        "viewer",
+				Description: "A To Do user",
+				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
+					g := removeCompletedTodo.graph.Users["me"]
 
 					if g != nil {
 						return r.Resolve(ctx, g, f)

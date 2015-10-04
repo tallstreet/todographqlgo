@@ -61,6 +61,16 @@ func (user *User) remove(id string) *TodoEdge {
 	return todo
 }
 
+func (user *User) clearCompleted() []string {
+	removedIds := make([]string, len(user.CompletedTodos.Edges))
+	for _, t := range user.CompletedTodos.Edges {
+		user.AnyTodos.removeTodo(t)
+		user.CompletedTodos.removeTodo(t)
+		removedIds = append(removedIds, t.Node.Id)
+	}
+	return removedIds
+}
+
 func (user *User) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 	return schema.GraphQLTypeInfo{
 		Name:        "User",
