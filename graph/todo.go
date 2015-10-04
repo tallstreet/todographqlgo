@@ -21,7 +21,7 @@ type PageInfo struct {
 }
 
 type TodoEdge struct {
-	Node   *TodoNode
+	Node *TodoNode
 }
 
 type TodoConnection struct {

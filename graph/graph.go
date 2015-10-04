@@ -14,11 +14,10 @@ type Graph struct {
 	Users  map[string]*User
 }
 
-
 type AddToDoMutation struct {
-	graph  *Graph
-	input  map[string]interface{}
-	edge   *TodoEdge
+	graph *Graph
+	input map[string]interface{}
+	edge  *TodoEdge
 }
 
 func NewGraph() *Graph {
@@ -77,7 +76,7 @@ func (graph *Graph) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 				Description: "A To Do user",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
 					input := ctx.Value("variables").(map[string]interface{})[f.Arguments[0].Value.(*graphql.Variable).Name].(map[string]interface{})
-					
+
 					todo := graph.AddToDo(graph.Users["me"], input["text"].(string), false)
 					return r.Resolve(ctx, &AddToDoMutation{graph, input, todo}, f)
 				},
@@ -110,7 +109,7 @@ func (addToDo *AddToDoMutation) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 					if g != nil {
 						return r.Resolve(ctx, g, f)
 					}
-					
+
 					return nil, fmt.Errorf("Todo not found")
 				},
 				IsRoot: true,
