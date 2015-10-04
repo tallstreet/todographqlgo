@@ -62,11 +62,11 @@ func (user *User) remove(id string) *TodoEdge {
 }
 
 func (user *User) clearCompleted() []string {
-	removedIds := make([]string, len(user.CompletedTodos.Edges))
-	for _, t := range user.CompletedTodos.Edges {
+	removedIds := make([]string, len(user.CompletedTodos.Edges), len(user.CompletedTodos.Edges))
+	for i, t := range user.CompletedTodos.Edges {
+		removedIds[i] = t.Node.Id
 		user.AnyTodos.removeTodo(t)
 		user.CompletedTodos.removeTodo(t)
-		removedIds = append(removedIds, t.Node.Id)
 	}
 	return removedIds
 }
