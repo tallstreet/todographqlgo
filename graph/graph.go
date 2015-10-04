@@ -30,6 +30,8 @@ func NewGraph() *Graph {
 	graph.Users["me"] = &User{
 		"me",
 		new(TodoConnection),
+		new(TodoConnection),
+		new(TodoConnection),
 	}
 
 	graph.AddToDo(graph.Users["me"], "Taste Javascript", false)

@@ -9,11 +9,18 @@ import (
 
 type User struct {
 	Id    string
-	Todos *TodoConnection
+	AnyTodos *TodoConnection
+	CompletedTodos *TodoConnection
+	ActiveTodos *TodoConnection
 }
 
 func (user *User) addToDo(todo *TodoEdge) {
-	user.Todos.addTodo(todo)
+	user.AnyTodos.addTodo(todo)
+	if todo.Node.Completed {
+		user.CompletedTodos.addTodo(todo)
+	} else {
+		user.ActiveTodos.addTodo(todo)
+	}
 }
 
 func (user *User) GraphQLTypeInfo() schema.GraphQLTypeInfo {
@@ -32,21 +39,29 @@ func (user *User) GraphQLTypeInfo() schema.GraphQLTypeInfo {
 				Name:        "todos",
 				Description: "The todos for a user.",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
-					return r.Resolve(ctx, user.Todos, f)
+					if f.Arguments[0].Name == "status" {
+						if f.Arguments[0].Value.(*graphql.Value).Value == "completed" {
+							return r.Resolve(ctx, user.CompletedTodos, f)
+						}
+						if f.Arguments[0].Value.(*graphql.Value).Value == "active" {
+							return r.Resolve(ctx, user.ActiveTodos, f)
+						}
+					}
+					return r.Resolve(ctx, user.AnyTodos, f)
 				},
 			},
 			"completedCount": {
 				Name:        "completedCount",
 				Description: "The todos for a user.",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
-					return r.Resolve(ctx, user.Todos.CompletedCount, f)
+					return r.Resolve(ctx, user.AnyTodos.CompletedCount, f)
 				},
 			},
 			"totalCount": {
 				Name:        "totalCount",
 				Description: "The todos for a user.",
 				Func: func(ctx context.Context, r resolver.Resolver, f *graphql.Field) (interface{}, error) {
-					return r.Resolve(ctx, user.Todos.TotalCount, f)
+					return r.Resolve(ctx, user.AnyTodos.TotalCount, f)
 				},
 			},
 		},
